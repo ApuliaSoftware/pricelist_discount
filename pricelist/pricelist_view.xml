@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <record id="product_pricelist_item_form_view_discounts" model="ir.ui.view">
+        <field name="name">product.pricelist.item.form.discounts</field>
+        <field name="model">product.pricelist.item</field>
+        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+        <field name="arch" type="xml">
+            <field name="base_pricelist_id" position="after">
+                <group col="6" colspan="4">
+                    <field name="discount1" /><!--on_change="onchange_sconto(sconto1, sconto2, sconto3)"/-->
+                    <field name="discount2" /><!--on_change="onchange_sconto(sconto1, sconto2, sconto3)"/-->
+                    <field name="discount3" /><!--on_change="onchange_sconto(sconto1, sconto2, sconto3)"/-->
+                </group>
+            </field>
+        </field>
+    </record>
+
+    </data>
+</openerp>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <!-- ====================================================== -->
+    <!--                ACCOUNT.INVOICE.LINE FORM               -->
+    <!-- ====================================================== -->
+    <record id="view_invoice_line_form_pl_discount" model="ir.ui.view">
+        <field name="name">account.invoice.line.form.pl_discount</field>
+        <field name="model">account.invoice.line</field>
+        <field name="inherit_id" ref="account.view_invoice_line_form"/>
+        <field name="arch" type="xml">
+            <field name='discount' position="after">
+                <field name="pricelist_discount1" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                <field name="pricelist_discount2" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                <field name="pricelist_discount3" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+            </field>
+            <field name='discount' position="attributes">
+                <attribute name="invisible">True</attribute>
+            </field>
+        </field>
+    </record>
+
+    <!-- ====================================================== -->
+    <!--                    ACCOUNT.INVOICE FORM                -->
+    <!-- ====================================================== -->
+    <record id="invoice_form_pl_discount" model="ir.ui.view">
+        <field name="name">account.invoice.form.pl.discount</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line']/tree/field[@name='discount']" position="after">
+                <field name="pricelist_discount1" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                <field name="pricelist_discount2" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                <field name="pricelist_discount3" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line']/tree/field[@name='discount']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</data>
+</openerp>
