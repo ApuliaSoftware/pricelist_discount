@@ -21,43 +21,24 @@
 #
 ##############################################################################
 
-from osv import fields, osv
-from tools.translate import _
+from openerp import models, fields, api, _
 from datetime import date, datetime, time, timedelta
 
 
-class product_pricelist_item(osv.osv):
+class product_pricelist_item(models.Model):
     _inherit = "product.pricelist.item"
 
-    _columns = {
-        'discount1': fields.float('Discount 1'),
-        'discount2': fields.float('Discount 2'),
-        'discount3': fields.float('Discount 3'),
-    }
-    _defaults = {
-        'discount1': 0.0,
-        'discount2': 0.0,
-        'discount3': 0.0,
-    }
+    discount1 = fields.Float(string='Discount 1', default = 0.0)
+    discount2 = fields.Float(string='Discount 2', default = 0.0)
+    discount3 = fields.Float(string='Discount 3', default = 0.0)
 
-    """
-    def onchange_sconto(self, cr, uid, ids, sc1, sc2, sc3, context={}):
-        value = {}
-        value['price_discount'] = ((100*(1-sc1)*(1-sc2)*(1-sc3))-100)/100
-        return {'value': value}
-    """
-
-    def get_right_item(self, cr, uid, partner, pricelist_id, product_id,
-                       qty, context):
-
+    @api.one
+    def get_right_item(self, partner, pricelist_id, product_id, qty):
         # ----- Init item (return it)
         item = False
 
         # ----- Get date
-        if context is None:
-            context = {}
-        date = context.get('date') or fields.date.context_today(
-            self, cr, uid, context)
+        date = self._context.get('date') or fields.Date.context_today(self)
 
         # ----- Recursive function to create categories list
         # ----------------------------------------------------------------------
@@ -78,13 +59,13 @@ class product_pricelist_item(osv.osv):
         product_obj = self.pool['product.product']
         product_category_obj = self.pool['product.category']
         product_ids = [product_id, ]
-        products = product_obj.browse(cr, uid, product_ids, context=context)
+        products = product_obj.browse(self._cr, self._uid, product_ids, context=self._context)
         products_dict = dict([(item.id, item) for item in products])
         tmpl_id = products_dict[product_id].product_tmpl_id and \
             products_dict[product_id].product_tmpl_id.id or False
-        product_category_ids = product_category_obj.search(cr, uid, [])
+        product_category_ids = product_category_obj.search(self._cr, self._uid, [])
         product_categories = product_category_obj.read(
-            cr, uid, product_category_ids, ['parent_id'])
+            self._cr, self._uid, product_category_ids, ['parent_id'])
         product_category_tree = dict(
             [(item['id'], item['parent_id'][0])
              for item in product_categories if item['parent_id']])
@@ -106,9 +87,9 @@ class product_pricelist_item(osv.osv):
         pricelist_ids = pricelist_id and [pricelist_id] or []
         if not pricelist_ids:
             pricelist_ids = self.pool['product.pricelist'].search(
-                cr, uid, [], context=context)
+                self._cr, self._uid, [], context=self._context)
         pricelist_version_ids = self.pool['product.pricelist.version'].search(
-            cr, uid, [('pricelist_id', 'in', pricelist_ids),
+            self._cr, self._uid, [('pricelist_id', 'in', pricelist_ids),
                       '|',
                       ('date_start', '=', False),
                       ('date_start', '<=', date),
@@ -119,7 +100,7 @@ class product_pricelist_item(osv.osv):
         if len(pricelist_ids) != len(pricelist_version_ids):
             return item
         # ----- Now we can search the value!
-        cr.execute(
+        self._cr.execute(
             'SELECT i.id '
             'FROM product_pricelist_item AS i, '
                 'product_pricelist_version AS v, product_pricelist AS pl '
@@ -133,7 +114,7 @@ class product_pricelist_item(osv.osv):
             'ORDER BY sequence',
             (tmpl_id, product_id) + partner_args + (pricelist_version_ids[0],
                                                     qty))
-        query_res = cr.dictfetchall()
+        query_res = self._cr.dictfetchall()
         if query_res:
             item = query_res[0]['id']
         return item

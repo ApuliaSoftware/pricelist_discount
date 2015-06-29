@@ -22,42 +22,40 @@
 ##############################################################################
 
 
-from osv import fields, osv
+from openerp import models, fields, api, _
 
 
-class sale_order_line(osv.osv):
+class sale_order_line(models.Model):
 
     _inherit = "sale.order.line"
 
-    _columns = {
-        'pricelist_discount1': fields.float('Discount 1'),
-        'pricelist_discount2': fields.float('Discount 2'),
-        'pricelist_discount3': fields.float('Discount 3'),
-    }
-    _defaults = {
-        'pricelist_discount1': 0.0,
-        'pricelist_discount2': 0.0,
-        'pricelist_discount3': 0.0,
-    }
+    pricelist_discount1 = fields.Float(string='Discount 1', default = 0.0)
+    pricelist_discount2 = fields.Float(string='Discount 2', default = 0.0)
+    pricelist_discount3 = fields.Float(string='Discount 3', default = 0.0)
 
-    def discounts_change(self, cr, uid, ids, d1, d2, d3, context=None):
-        res = {'value': {'discount': 0.0}}
+    @api.onchange(
+        'pricelist_discount1', 'pricelist_discount2', 'pricelist_discount3')
+    def discounts_change(self):
         discount = 100.00
-        for dis in [d1, d2, d3]:
+        for dis in [self.pricelist_discount1,
+                    self.pricelist_discount2,
+                    self.pricelist_discount3]:
             discount -= discount * (dis/100.00)
         discount = 100.00 - discount
-        res['value']['discount'] = discount
-        return res
+        self.discount = discount
+        # res['value']['discount'] = discount
+        # return res
 
+    @api.onchange('product_id', 'product_uom_qty')
     def product_id_change(
             self, cr, uid, ids, pricelist, product, qty=0,
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
             lang=False, update_tax=True, date_order=False, packaging=False,
             fiscal_position=False, flag=False, order_id=False, context=None):
         res = super(sale_order_line, self).product_id_change(
-            cr, uid, ids, pricelist, product, qty, uom, qty_uos, uos, name,
-            partner_id, lang, update_tax, date_order, packaging,
-            fiscal_position, flag, context)
+            cr, uid, ids, pricelist, product, qty, uom,
+            qty_uos, uos, name, partner_id, lang, update_tax, date_order,
+            packaging, fiscal_position, flag, context)
 
         if not product:
             return res
@@ -72,7 +70,7 @@ class sale_order_line(osv.osv):
             })
         item_obj = self.pool['product.pricelist.item']
         item_id = item_obj.get_right_item(
-            cr, uid, partner_id, pricelist, product, qty, context)
+            cr, uid, ids, partner_id, pricelist, product, qty, context=context)
         if item_id:
             item = item_obj.browse(cr, uid, item_id, context)
             discount = 100.00

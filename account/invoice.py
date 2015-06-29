@@ -21,25 +21,19 @@
 ##############################################################################
 
 
-from osv import fields, osv
+from openerp import models, fields, api, _
 
 
-class account_invoice_line(osv.osv):
+class account_invoice_line(models.Model):
 
     _inherit = "account.invoice.line"
 
-    _columns = {
-        'pricelist_discount1': fields.float('Discount 1'),
-        'pricelist_discount2': fields.float('Discount 2'),
-        'pricelist_discount3': fields.float('Discount 3'),
-    }
-    _defaults = {
-        'pricelist_discount1': 0.0,
-        'pricelist_discount2': 0.0,
-        'pricelist_discount3': 0.0,
-    }
+    pricelist_discount1 = fields.Float(string='Discount 1', default = 0.0)
+    pricelist_discount2 = fields.Float(string='Discount 2', default = 0.0)
+    pricelist_discount3 = fields.Float(string='Discount 3', default = 0.0)
 
-    def discounts_change(self, cr, uid, ids, d1, d2, d3, context=None):
+    @api.onchange(pricelist_discount1, pricelist_discount2, pricelist_discount3)
+    def discounts_change(self, d1, d2, d3):
         res = {'value': {'discount': 0.0}}
         discount = 100.00
         for dis in [d1, d2, d3]:

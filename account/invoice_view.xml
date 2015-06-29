@@ -11,9 +11,9 @@
         <field name="inherit_id" ref="account.view_invoice_line_form"/>
         <field name="arch" type="xml">
             <field name='discount' position="after">
-                <field name="pricelist_discount1" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                <field name="pricelist_discount2" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                <field name="pricelist_discount3" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                <field name="pricelist_discount1" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                <field name="pricelist_discount2" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                <field name="pricelist_discount3" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
             </field>
             <field name='discount' position="attributes">
                 <attribute name="invisible">True</attribute>
@@ -30,9 +30,9 @@
         <field name="inherit_id" ref="account.invoice_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_line']/tree/field[@name='discount']" position="after">
-                <field name="pricelist_discount1" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                <field name="pricelist_discount2" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                <field name="pricelist_discount3" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                <field name="pricelist_discount1" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                <field name="pricelist_discount2" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                <field name="pricelist_discount3" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
             </xpath>
             <xpath expr="//field[@name='invoice_line']/tree/field[@name='discount']" position="attributes">
                 <attribute name="invisible">True</attribute>

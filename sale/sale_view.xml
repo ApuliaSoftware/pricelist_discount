@@ -2,23 +2,23 @@
 <openerp>
     <data>
 
-        <record id="view_sale_form_ricla2" model="ir.ui.view">
+        <record id="view_sale_form_pl_discount" model="ir.ui.view">
             <field name="name">sale.order.pl_dis</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form_editable_list"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='order_line']/form/group/group/div/field[@name='discount']" position="after">
-                    <field name="pricelist_discount1" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                    <field name="pricelist_discount2" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                    <field name="pricelist_discount3" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                <xpath expr="//div[@name='discount']/field[@name='discount']" position="after">
+                    <field name="pricelist_discount1" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                    <field name="pricelist_discount2" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                    <field name="pricelist_discount3" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
                 </xpath>
-                <xpath expr="//field[@name='order_line']/form/group/group/div/field[@name='discount']" position="attributes">
+                <xpath expr="//div[@name='discount']/field[@name='discount']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="after">
-                    <field name="pricelist_discount1" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                    <field name="pricelist_discount2" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
-                    <field name="pricelist_discount3" on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/>
+                    <field name="pricelist_discount1" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                    <field name="pricelist_discount2" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
+                    <field name="pricelist_discount3" /> <!--on_change="discounts_change(pricelist_discount1, pricelist_discount2, pricelist_discount3)"/-->
                 </xpath>
                 <xpath expr="//field[@name='order_line']/tree/field[@name='discount']" position="attributes">
                     <attribute name="invisible">True</attribute>
