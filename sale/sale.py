@@ -25,7 +25,7 @@
 from openerp import models, fields, api, _
 
 
-class sale_order_line(models.Model):
+class SaleOrderLine(models.Model):
 
     _inherit = "sale.order.line"
 
@@ -33,8 +33,8 @@ class sale_order_line(models.Model):
     pricelist_discount2 = fields.Float(string='Discount 2', default = 0.0)
     pricelist_discount3 = fields.Float(string='Discount 3', default = 0.0)
 
-    @api.onchange(
-        'pricelist_discount1', 'pricelist_discount2', 'pricelist_discount3')
+    @api.onchange('pricelist_discount1', 'pricelist_discount2',
+                  'pricelist_discount3')
     def discounts_change(self):
         discount = 100.00
         for dis in [self.pricelist_discount1,
@@ -43,8 +43,6 @@ class sale_order_line(models.Model):
             discount -= discount * (dis/100.00)
         discount = 100.00 - discount
         self.discount = discount
-        # res['value']['discount'] = discount
-        # return res
 
     @api.onchange('product_id', 'product_uom_qty')
     def product_id_change(
@@ -52,7 +50,7 @@ class sale_order_line(models.Model):
             uom=False, qty_uos=0, uos=False, name='', partner_id=False,
             lang=False, update_tax=True, date_order=False, packaging=False,
             fiscal_position=False, flag=False, order_id=False, context=None):
-        res = super(sale_order_line, self).product_id_change(
+        res = super(SaleOrderLine, self).product_id_change(
             cr, uid, ids, pricelist, product, qty, uom,
             qty_uos, uos, name, partner_id, lang, update_tax, date_order,
             packaging, fiscal_position, flag, context)
@@ -70,7 +68,7 @@ class sale_order_line(models.Model):
             })
         item_obj = self.pool['product.pricelist.item']
         item_id = item_obj.get_right_item(
-            cr, uid, ids, partner_id, pricelist, product, qty, context=context)
+            cr, uid, partner_id, pricelist, product, qty, context=context)
         if item_id:
             item = item_obj.browse(cr, uid, item_id, context)
             discount = 100.00
@@ -87,7 +85,7 @@ class sale_order_line(models.Model):
 
     def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False,
                                          context=None):
-        res = super(sale_order_line, self)._prepare_order_line_invoice_line(
+        res = super(SaleOrderLine, self)._prepare_order_line_invoice_line(
             cr, uid, line, account_id, context)
         if res:
             # ----- Copy discount keep from pricelist item

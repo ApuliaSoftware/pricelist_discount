@@ -32,13 +32,16 @@ class product_pricelist_item(models.Model):
     discount2 = fields.Float(string='Discount 2', default = 0.0)
     discount3 = fields.Float(string='Discount 3', default = 0.0)
 
-    @api.one
-    def get_right_item(self, partner, pricelist_id, product_id, qty):
+    def get_right_item(self, cr, uid, partner, pricelist_id, product_id,
+                       qty, context):
+
         # ----- Init item (return it)
         item = False
 
         # ----- Get date
-        date = self._context.get('date') or fields.Date.context_today(self)
+        if context is None:
+            context = {}
+        date = context.get('date') or fields.Date.today()
 
         # ----- Recursive function to create categories list
         # ----------------------------------------------------------------------
@@ -59,13 +62,13 @@ class product_pricelist_item(models.Model):
         product_obj = self.pool['product.product']
         product_category_obj = self.pool['product.category']
         product_ids = [product_id, ]
-        products = product_obj.browse(self._cr, self._uid, product_ids, context=self._context)
+        products = product_obj.browse(cr, uid, product_ids, context=context)
         products_dict = dict([(item.id, item) for item in products])
         tmpl_id = products_dict[product_id].product_tmpl_id and \
             products_dict[product_id].product_tmpl_id.id or False
-        product_category_ids = product_category_obj.search(self._cr, self._uid, [])
+        product_category_ids = product_category_obj.search(cr, uid, [])
         product_categories = product_category_obj.read(
-            self._cr, self._uid, product_category_ids, ['parent_id'])
+            cr, uid, product_category_ids, ['parent_id'])
         product_category_tree = dict(
             [(item['id'], item['parent_id'][0])
              for item in product_categories if item['parent_id']])
@@ -87,9 +90,9 @@ class product_pricelist_item(models.Model):
         pricelist_ids = pricelist_id and [pricelist_id] or []
         if not pricelist_ids:
             pricelist_ids = self.pool['product.pricelist'].search(
-                self._cr, self._uid, [], context=self._context)
+                cr, uid, [], context=context)
         pricelist_version_ids = self.pool['product.pricelist.version'].search(
-            self._cr, self._uid, [('pricelist_id', 'in', pricelist_ids),
+            cr, uid, [('pricelist_id', 'in', pricelist_ids),
                       '|',
                       ('date_start', '=', False),
                       ('date_start', '<=', date),
@@ -100,7 +103,7 @@ class product_pricelist_item(models.Model):
         if len(pricelist_ids) != len(pricelist_version_ids):
             return item
         # ----- Now we can search the value!
-        self._cr.execute(
+        cr.execute(
             'SELECT i.id '
             'FROM product_pricelist_item AS i, '
                 'product_pricelist_version AS v, product_pricelist AS pl '
@@ -114,7 +117,7 @@ class product_pricelist_item(models.Model):
             'ORDER BY sequence',
             (tmpl_id, product_id) + partner_args + (pricelist_version_ids[0],
                                                     qty))
-        query_res = self._cr.dictfetchall()
+        query_res = cr.dictfetchall()
         if query_res:
             item = query_res[0]['id']
         return item
